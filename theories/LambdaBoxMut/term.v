@@ -1,6 +1,7 @@
 Require Import FunInd.
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.String.
+Require Import Coq.Arith.PeanoNat.
 Require Import Coq.Arith.Compare_dec.
 Require Import Coq.Arith.Peano_dec.
 Require Import Coq.micromega.Lia.
@@ -35,6 +36,8 @@ Definition isConstruct (t:Term) : Prop :=
 Lemma IsConstruct: forall i n args, isConstruct (TConstruct i n args).
 intros. exists i, n, args. reflexivity.
 Qed.
+
+#[export]
 Hint Resolve IsConstruct : core.
 Lemma isConstruct_dec: forall t, {isConstruct t}+{~ isConstruct t}.
 Proof.
@@ -232,6 +235,8 @@ Definition isWrong (t:Term) : Prop :=  exists str, t = TWrong str.
 Lemma IsWrong: forall str, isWrong (TWrong str).
   intros. exists str. reflexivity.
 Qed.
+
+#[export]
 Hint Resolve IsWrong : core.
 Lemma isWrong_dec: forall t, {isWrong t}+{~ isWrong t}.
 Proof.
@@ -245,6 +250,8 @@ Definition isLambda (t:Term) : Prop :=
 Lemma IsLambda: forall nm bod, isLambda (TLambda nm bod).
 intros. exists nm, bod. reflexivity.
 Qed.
+
+#[export]
 Hint Resolve IsLambda : core.
 Lemma isLambda_dec: forall t, {isLambda t}+{~ isLambda t}.
 induction t;
@@ -970,6 +977,8 @@ Definition isFix (t:Term) : Prop :=
 Lemma IsFix: forall ds n, isFix (TFix ds n).
 intros. exists ds, n. reflexivity.
 Qed.
+
+#[export]
 Hint Resolve IsFix : core.
 
 Lemma isFix_dec: forall t, {isFix t}+{~ isFix t}.
@@ -984,6 +993,8 @@ Definition isProof (t:Term) : Prop := t = TProof.
 Lemma IsProof: isProof TProof.
 intros. reflexivity.
 Qed.
+
+#[export]
 Hint Resolve IsProof : core.
 Lemma isProof_dec: forall t, {isProof t}+{~ isProof t}.
 Proof.
@@ -995,6 +1006,8 @@ Defined.
 Inductive isCanonical : Term -> Prop :=
 | canC: forall (i:inductive) (n:nat) args, isCanonical (TConstruct i n args)
 | canP: isCanonical TProof.
+
+#[export]
 Hint Constructors isCanonical : core.
 
 Lemma isCanonical_dec: forall t, isCanonical t \/ ~ isCanonical t.
@@ -1033,6 +1046,8 @@ Lemma tappend_tnil: forall ts:Terms, tappend ts tnil = ts.
 induction ts; simpl; try reflexivity.
 rewrite IHts. reflexivity.
 Qed.
+
+#[export]
 Hint Rewrite tappend_tnil : tappend.
 
 Lemma tappend_assoc:
@@ -1251,7 +1266,7 @@ Lemma tnth_extend1:
   forall n l t,  tnth n l = Some t -> n < tlength l.
 Proof.
   induction n; induction l; simpl; intros; try discriminate; try lia.
-  - apply Lt.lt_n_S. eapply IHn. eassumption.
+  -  rewrite <-  Nat.succ_lt_mono. eapply IHn, H.
 Qed.
 
 Lemma tnth_extend2:
@@ -1260,8 +1275,9 @@ Proof.
   induction n; intros.
   - destruct l. simpl in H. lia. exists t. reflexivity.
   - destruct l. inversion H. simpl in H.
-    specialize (IHn _ (Lt.lt_S_n _ _ H)). destruct IHn. exists x.
-    simpl. assumption.
+    rewrite <-  Nat.succ_lt_mono in H.
+    destruct (IHn _ H) as [x H0].
+    exists x. simpl. assumption.
 Qed.
 
 Lemma tnth_append:
@@ -1627,6 +1643,8 @@ with WFappDs: Defs -> Prop :=
      | wfadcons: forall nm bod arg ds,
          WFapp bod -> WFappDs ds ->
          WFappDs (dcons nm bod arg ds).
+
+#[export]
 Hint Constructors WFapp WFapps WFappBs WFappDs : core.
 Scheme WFapp_ind' := Minimality for WFapp Sort Prop
   with WFapps_ind' := Minimality for WFapps Sort Prop
@@ -1903,6 +1921,8 @@ with WFTrmDs: Defs -> nat -> Prop :=
      | wfdcons: forall n nm bod arg ds,
          WFTrm bod n -> WFTrmDs ds n ->
          WFTrmDs (dcons nm bod arg ds) n.
+
+#[export]
 Hint Constructors WFTrm WFTrms WFTrmBs WFTrmDs : core.
 Scheme WFTrm_ind' := Minimality for WFTrm Sort Prop
   with WFTrms_ind' := Minimality for WFTrms Sort Prop
@@ -2455,6 +2475,7 @@ with InstantiateDefs: nat -> Defs -> Defs -> Prop :=
             InstantiateDefs n ds ids ->
             InstantiateDefs n (dcons nm bod rarg ds)
                             (dcons nm ibod rarg ids).
+
 Hint Constructors Instantiate Instantiates InstantiateBrs InstantiateDefs : core.
 Scheme Instantiate_ind' := Induction for Instantiate Sort Prop
   with Instantiates_ind' := Induction for Instantiates Sort Prop
@@ -2469,7 +2490,7 @@ Lemma Instantiates_pres_tlength:
 Proof.
   induction 1.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma InstantiateBrs_pres_blength:
@@ -2477,7 +2498,7 @@ Lemma InstantiateBrs_pres_blength:
 Proof.
   induction 1.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma InstantiateDefs_pres_dlength:
@@ -2485,7 +2506,7 @@ Lemma InstantiateDefs_pres_dlength:
 Proof.
   induction 1.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma Instantiate_pres_isLambda:
@@ -2537,7 +2558,7 @@ Lemma instantiates_pres_tlength:
 Proof.
   induction ds.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma instantiateDefs_pres_dlength:
@@ -2545,7 +2566,7 @@ Lemma instantiateDefs_pres_dlength:
 Proof.
   induction ds.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma instantiates_tcons_commute:
@@ -2749,7 +2770,7 @@ Lemma Instantiate_instantiate:
   (forall n ts its, Instantiates n ts its -> instantiates n ts = its) /\
   (forall n ts its, InstantiateBrs n ts its -> instantiateBrs n ts = its) /\
   (forall n ds ids, InstantiateDefs n ds ids -> instantiateDefs n ds = ids).
-apply InstInstsBrsDefs_ind; intros; simpl; intuition; try (subst; reflexivity).
+apply InstInstsBrsDefs_ind; intros; simpl; auto with *; try (subst; reflexivity).
 - rewrite nat_compare_EQ. reflexivity.
 - rewrite (proj1 (nat_compare_gt n m) g). reflexivity.
 - rewrite (proj1 (nat_compare_lt n m) l). reflexivity.
@@ -2804,7 +2825,7 @@ Proof.
   - change (WFapp (TApp (instantiate n fn) (instantiate n t))).
     constructor. apply H0; assumption. apply H2. assumption.
   - change (WFapp (TConstruct i m1 (instantiates n args))).
-    constructor. intuition.
+    constructor. auto with *.
   - change (WFapp (TCase i (instantiate n mch) (instantiateBrs n brs))).
     constructor.
     + apply H0; assumption.
@@ -2812,7 +2833,7 @@ Proof.
    - change (WFapp (TFix (instantiateDefs (n + dlength defs) defs) m)).
      constructor.
      + apply H0. assumption.
-   - intuition.
+   - auto with *.
    - change (WFappBs (bcons n (instantiate (List.length n + n0) b)
                             (instantiateBrs n0 bs))).
      constructor.

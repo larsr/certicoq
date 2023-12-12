@@ -641,7 +641,7 @@ Proof.
     intros. forward H5. lia.
     eapply lookup_eval_env in H1; eauto.
     destruct H1 as [bef [bef' [after' [t' H']]]].
-    exists t'; intuition.   
+    exists t'; auto with *.   
   - constructor; eauto;try lia.
     * rewrite efnlst_length_trans. lia.
     * rewrite efnlst_length_trans.
@@ -939,7 +939,7 @@ Proof.
     
   - (* Match *)
     intros. inv H1. specialize (H0 k k' H10 H2).
-    cbn; intuition.
+    cbn; auto with *.
 
   - (* Fix *)
     intros defs IHdefs n k k' wft kk'. inv wft.
@@ -1037,7 +1037,7 @@ Proof.
   intros.
   rewrite <- !(proj1 (trans_env_eval _ _ _ H)).
   rewrite trans_instantiate_any; auto.
-  equaln. rewrite <- minus_n_n.
+  equaln. rewrite Nat.sub_diag.
   now rewrite (proj1 shift0). 
 Qed.
 
@@ -1121,7 +1121,7 @@ Proof.
   intros wfe' H. revert e' wfe' H.
   induction e; intros.
   simpl in H.
-  inv H. inv H4. simpl in *. exists [], t'. intuition.
+  inv H. inv H4. simpl in *. exists [], t'. auto with *.
   
   inv H.
   inv wfe'.
@@ -1142,7 +1142,7 @@ Proof.
   pose (sbst_env_length t'' 0 e). rewrite H in e2.
   simpl in e2. now rewrite <- e2.
   rewrite <- H0, H in H4. apply H4.
-  apply wf_tr_environ_inv in H3. intuition.
+  apply wf_tr_environ_inv in H3. auto with *.
 Qed.
 
 Lemma exp_wf_mkLets n e t :
@@ -1231,6 +1231,7 @@ with WNeutral : Term -> Prop :=
 | WNApp f a : WNeutral f -> WNorm a -> WNeutral (TApp f a)
 | WNCase mch n brs : WNeutral mch -> WNorms (terms_of_brs brs) -> WNeutral (TCase n mch brs).
 
+#[export]
 Hint Constructors WNorm WNeutral WNorms : core.
 Scheme WNorm_ind' := Induction for WNorm Sort Prop
   with WNeutral_ind' := Induction for WNeutral Sort Prop
@@ -1317,7 +1318,7 @@ Proof.
   revert bod; unfold sbst_fix, sbst_fix_aux.
   generalize (@eq_refl _ (efnlength es)).
   generalize (efnlength es) at 1 3.
-  generalize (le_refl (efnlength es)).
+  generalize (Nat.le_refl (efnlength es)).
   generalize es at 1 4 5 7.
   generalize (list_to_zero_spec (efnlength es)).
   induction (list_to_zero (efnlength es)); simpl; intros.
@@ -1406,7 +1407,7 @@ Lemma LambdaBoxMutsbst_fix_aux_sbst_fix_aux env prims e dts body :
 Proof.
   revert body.
   unfold LambdaBoxMutsbst_fix_aux, sbst_fix_aux.
-  generalize (le_refl (dlength dts)).
+  generalize (Nat.le_refl (dlength dts)).
   Opaque shift.
   simpl.
   generalize dts at 2 4 5 6 8 9 10.
@@ -1478,7 +1479,7 @@ Lemma find_branch_trans e prims (t : list name * Term) (i : inductive) (n : nat)
 Proof.
   assert(0 = N.of_nat (blength brs - blength brs)) by lia.
   revert H.
-  generalize (le_refl (blength brs)).
+  generalize (Nat.le_refl (blength brs)).
   assert(0 <= N.of_nat n) by lia.
   revert H.
   replace n with (n - N.to_nat 0)%nat at 2 4 by lia.
@@ -1786,7 +1787,7 @@ Proof.
     rewrite H0. now rewrite N.add_assoc.
     now rewrite S_to_nat in H2.
   + intros IH1 ? IH2 k Ht.
-    eapply Crct_invrt_App in Ht; eauto. intuition.
+    eapply Crct_invrt_App in Ht; eauto. auto with *.
     (* rewrite IH1, IH2; eauto. *)
   + intros.
     destruct (find_prim _ _). reflexivity.
@@ -2091,8 +2092,8 @@ Proof.
     eauto using wcbvEval_pres_Crct. eapply wcbvEval_pres_Crct; eauto.
   - dstrctn a. apply Crct_invrt_App in H1 as [Hfn Harg].
     specialize (H Hfn). inv H. apply wcbvEval_pres_Crct in w; auto.
-    inv w; inv H4; intuition.
-    intuition. intuition. intuition. intuition. elim j; now eexists.
+    inv w; inv H4; auto.
+    auto with *. auto with *. auto with *. intuition. elim j; now eexists.
     eapply wcbvEval_pres_Crct in w; auto. inv w.
   - apply Crct_invrt_Case in H1; intuition. apply wcbvEval_pres_Crct in w; auto. apply H0.
     destruct i.
@@ -2279,7 +2280,7 @@ Proof with eauto.
   + (* Constructor *)
     intros i r (*arty *) args args' Hargs Hargs' wft.
     destruct i.
-    inv wft. eauto. intuition. 
+    inv wft. eauto. auto with *. 
     unfold translate, subst_env.
     rewrite !subst_env_aux_constructor.
     constructor; auto.

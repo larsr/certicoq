@@ -7,6 +7,7 @@ Require Import Coq.Strings.String.
 Require Import Coq.Lists.List Coq.MSets.MSets Coq.MSets.MSetRBT Coq.Numbers.BinNums
         Coq.NArith.BinNat Coq.PArith.BinPos Coq.Sets.Ensembles micromega.Lia.
 Require Import ExtLib.Structures.Monads ExtLib.Data.Monads.StateMonad.
+Require Import Coq.Arith.PeanoNat.
 
 Require Import Common.compM.
 
@@ -106,7 +107,7 @@ Section list_lemmas.
     length l = length (a ++ [b]) -> exists a1 b1, l = a1 ++ [b1].
   Proof.
     induction l; intros.
-    - rewrite app_length in H. inversion H. rewrite Plus.plus_comm in H1. inversion H1.
+    - rewrite app_length in H. inversion H. rewrite Nat.add_comm in H1. inversion H1.
     - destruct a0.
       + assert (l = []) by (destruct l; [easy|inversion H]). subst.
         now exists [], a.
@@ -325,7 +326,9 @@ with uncurry_fundefs_step :
       s' 
       (M.set g true m).
 
+#[global]
 Hint Constructors uncurry_step : core.
+#[global]
 Hint Constructors uncurry_fundefs_step : core.
 
 Scheme uncurry_step_mut := Minimality for uncurry_step Sort Prop
@@ -1397,6 +1400,7 @@ Corollary uncurry_fundefs_step_preserves_unique_bindings : forall f s m f1 s1 m1
   unique_bindings_fundefs f1.
 Proof. apply uncurry_step_preserves_unique_bindings_mut. Qed.
 
+#[global]
 Hint Constructors unique_bindings : core.
 
 Lemma uncurry_fundefs_step_unique_names : forall a f s m f1 s1 m1,
@@ -2091,7 +2095,9 @@ Inductive uncurry_rel_fundefs :
       uncurry_rel_fundefs n f1 s1 m1 f2 s2 m2 ->
       uncurry_rel_fundefs (S n) f s m f2 s2 m2.
 
+#[global]
 Hint Constructors uncurry_rel : core.
+#[global]
 Hint Constructors uncurry_rel_fundefs : core.
 
 Lemma uncurry_rel_Sn : forall n e s m e1 s1 m1,

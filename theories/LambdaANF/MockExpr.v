@@ -31,5 +31,7 @@ MetaCoq Run (mk_Frame_ops (MPfile ["MockExpr"; "LambdaANF"; "CertiCoq"])
 (* Print exp_Frame_ops. *)
 (* Print exp_aux_data. *)
 
+#[export]
 Instance Frame_exp : Frame exp_univ := exp_Frame_ops.
+#[export]
 Instance AuxData_exp : AuxData exp_univ := exp_aux_data.

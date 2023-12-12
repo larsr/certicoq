@@ -510,6 +510,8 @@ Qed.
 Lemma nat_compare_EQ: forall n, Nat.compare n n = Eq.
   intro n. apply (proj2 (Nat.compare_eq_iff n n)). reflexivity.
 Qed.
+
+#[export]
 Hint Rewrite nat_compare_EQ : core.
 
 Lemma notNone_Some:
@@ -537,9 +539,9 @@ induction m; simpl; reflexivity.
 Qed.
 
 Lemma max_fst: forall m n, max m n >= m.
-induction m; induction n; simpl; intuition.
+induction m; induction n; simpl; auto with *.
 Qed.
 
 Lemma max_snd: forall m n, max m n >= n.
-induction m; induction n; simpl; intuition.
+induction m; induction n; simpl; auto with *.
 Qed.

@@ -196,7 +196,7 @@ Proof.
     edestruct split_fds_trans as [B3 [H1 H2]] ; [ apply Hspl1 | |]; eauto.
     repeat eexists. rewrite Heq1, Heq2; eauto.
     constructor. eassumption. 
-    rewrite Max.max_comm. econstructor; eauto. econstructor; eauto.
+    rewrite Nat.max_comm. econstructor; eauto. econstructor; eauto.
     apply split_fds_sym; eauto.
   - repeat eexists; eauto using split_fds_nil_l; repeat econstructor.
 Qed.
@@ -246,6 +246,7 @@ Inductive no_fun_defs : fundefs -> Prop  :=
 | Fnil_no_fun :
     no_fun_defs Fnil.
 
+#[global]
 Hint Constructors no_fun no_fun_defs : core.
 
 Lemma no_fun_split_fds B B' B'' :
@@ -750,7 +751,7 @@ Proof.
       -- eassumption.
       -- eassumption.
       -- eassumption.
-      -- eapply le_trans. eassumption. eapply Nat.le_max_r. 
+      -- eapply Nat.le_trans. eassumption. eapply Nat.le_max_r. 
   - inv Hfind.
 Qed.
   

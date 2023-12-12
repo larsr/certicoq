@@ -29,7 +29,7 @@ Proof.
   intros s1 s2. destruct s1, s2. 
   destruct (inductive_dec i i0), (eq_nat_dec n n0);
     subst; try (solve [left; reflexivity]);
-  right; intros h; elim n1; injection h; intuition.
+  right; intros h; elim n1; injection h; auto with *.
 Qed.
 
 Inductive Term : Type :=
@@ -93,8 +93,8 @@ Proof.
   - cbn in H. lia.
   - cbn in H. case_eq ts; intros; subst.
     + exists t, tnil. auto. cbn in H. assert (j:p = 0). lia. subst.
-      intuition.
-    + exists t, (tcons t0 t1). intuition.
+      auto with *.
+    + exists t, (tcons t0 t1). auto with *.
 Qed.
 
 Function tappend (ts1 ts2:Terms) : Terms :=
@@ -157,7 +157,7 @@ Lemma tappend_tunit_inject:
                     ts = us /\ t = u.
 Proof.
   induction ts; induction us; intros.
-  - cbn in H.  myInjection H. intuition.
+  - cbn in H.  myInjection H. auto with *.
   - cbn in H. myInjection H. destruct us.
     + cbn in H0. discriminate.
     + cbn in H0. discriminate.
@@ -165,7 +165,7 @@ Proof.
     + cbn in H0. discriminate.
     + cbn in H0. discriminate.
   - cbn in H. myInjection H. specialize (IHts _ _ _ H0).
-    destruct IHts. subst. intuition.
+    destruct IHts. subst. auto with *.
 Qed.
     
 Fixpoint tdrop n ts : Terms :=
@@ -281,7 +281,7 @@ Lemma lifts_pres_tlength:
 Proof.
   induction ts.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma liftDs_pres_dlength:
@@ -289,7 +289,7 @@ Lemma liftDs_pres_dlength:
 Proof.
   induction ds.
   + reflexivity.
-  + simpl. intuition.
+  + simpl. auto with *.
 Qed.
 
 Lemma tappend_pres_lifts:

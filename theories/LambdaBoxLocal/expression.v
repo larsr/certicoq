@@ -841,7 +841,7 @@ Lemma pre_eval_evaln:
         forall m, m >= n -> evals_n (S m) es = Some vs).
 Proof.
   assert (j:forall m, m > 0 -> m = S (m - 1)).
-  { induction m; intuition. }
+  { induction m; auto with *. }
   apply my_eval_ind; intros; try (exists 0; intros mx h; reflexivity).
   - destruct H, H0, H1. exists (S (max x (max x0 x3))). intros m h.
     assert (j1:= max_fst x (max x0 x3)). 

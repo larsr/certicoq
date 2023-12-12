@@ -67,6 +67,7 @@ with WcbvEvals (p:environ Term) : Terms -> Terms -> Prop :=
      | wCons: forall t t' ts ts',
          WcbvEval p t t' -> WcbvEvals p ts ts' -> 
          WcbvEvals p (tcons t ts) (tcons t' ts').
+#[export]
 Hint Constructors WcbvEval WcbvEvals : core.
 Scheme WcbvEval1_ind := Induction for WcbvEval Sort Prop
      with WcbvEvals1_ind := Induction for WcbvEvals Sort Prop.
@@ -223,7 +224,7 @@ Lemma WcbvEval_weaken:
                                  WcbvEvals ((nm,ec)::p) ts ss).
 Proof.
   intros p. apply WcbvEvalEvals_ind; intros; auto.
-  - econstructor; intuition.
+  - econstructor; auto with *.
   - destruct (Classes.eq_dec nm nm0).
     + subst. inversion_Clear H0; unfold lookupDfn in e.
       * rewrite (proj1 (fresh_lookup_None (trm:=Term) _ _)) in e.
@@ -237,9 +238,9 @@ Proof.
     + apply H. assumption.
     + apply H0. assumption.
     + apply H1. assumption.
-  - eapply wLetIn; intuition.
-  - eapply wAppFix; try eassumption; intuition. 
-  - eapply wCase; intuition; eassumption.
+  - eapply wLetIn; auto with *.
+  - eapply wAppFix; try eassumption; auto with *. 
+  - eapply wCase; auto with *; eassumption.
 Qed.
 
 Lemma LookupDfn_pres_Crct:
@@ -425,7 +426,7 @@ Proof.
   - eapply wCase; subst; try eassumption.
     + now apply H. 
     + intuition.
-  - eapply wLetIn; intuition.
+  - eapply wLetIn; auto with *.
 Qed.
 
 Lemma wcbvEvals_tcons_tcons:
@@ -448,7 +449,7 @@ Lemma pre_WcbvEval_wcbvEval:
                  exists n, forall m, m >= n -> wcbvEvals (S m) ts = Ret ss).
 Proof.
   assert (j:forall m, m > 0 -> m = S (m - 1)).
-  { induction m; intuition. }
+  { induction m; auto with *. }
   apply WcbvEvalEvals_ind; intros; try (exists 0; intros mx h; reflexivity).
   - destruct H, H0. exists (S (max x x0)). intros mx h.
     assert (l1:= max_fst x x0). assert (l2:= max_snd x x0).
