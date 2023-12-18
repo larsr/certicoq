@@ -204,6 +204,8 @@ extraction/equalities.ml
 extraction/equalities.mli
 extraction/erasureFunction.ml
 extraction/erasureFunction.mli
+extraction/erasureFunctionProperties.ml
+extraction/erasureFunctionProperties.mli
 extraction/erasure.ml
 extraction/erasure.mli
 extraction/errors0.ml

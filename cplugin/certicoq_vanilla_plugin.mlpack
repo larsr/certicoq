@@ -160,6 +160,7 @@ EPretty
 Extract
 EEtaExpanded
 ErasureFunction
+ErasureFunctionProperties
 EProgram
 ERemoveParams
 EOptimizePropDiscr
